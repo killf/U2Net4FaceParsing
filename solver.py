@@ -145,7 +145,8 @@ class Solver:
         os.makedirs(result_folder, exist_ok=True)
 
         self.model.eval()
-        for step, file_name in enumerate(os.listdir(sample_dir)):
+        files = os.listdir(sample_dir)
+        for step, file_name in enumerate(files):
             image = Image.open(os.path.join(sample_dir, file_name)).resize(self.cfg.image_size)
             img = self.cfg.test_transform(image)
             img = torch.unsqueeze(img, 0)
@@ -155,7 +156,7 @@ class Solver:
 
             vis_parsing_maps(image, parsing, stride=1, save_im=True, save_path=os.path.join(result_folder, file_name))
 
-            print(f"[Sample] {step + 1}/{len(self.val_loader)}", end="\r", flush=True)
+            print(f"[Sample] {step + 1}/{len(files)}", end="\r", flush=True)
         print(f"[{datetime.datetime.now():%Y-%m-%d %H:%M:%S}] [Sample] {os.path.realpath(result_folder)}")
 
     def adjust_lr(self, value):

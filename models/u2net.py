@@ -4,25 +4,20 @@ import torch.nn.functional as F
 
 
 class REBNCONV(nn.Module):
-    def __init__(self, in_ch=3, out_ch=3, dirate=1):
+    def __init__(self, in_ch=3, out_ch=3, dilate=1):
         super(REBNCONV, self).__init__()
 
-        self.conv_s1 = nn.Conv2d(in_ch, out_ch, 3, padding=1 * dirate, dilation=1 * dirate)
+        self.conv_s1 = nn.Conv2d(in_ch, out_ch, 3, padding=1 * dilate, dilation=1 * dilate)
         self.bn_s1 = nn.BatchNorm2d(out_ch)
         self.relu_s1 = nn.ReLU(inplace=True)
 
     def forward(self, x):
-        hx = x
-        xout = self.relu_s1(self.bn_s1(self.conv_s1(hx)))
-
-        return xout
+        return self.relu_s1(self.bn_s1(self.conv_s1(x)))
 
 
 ## upsample tensor 'src' to have the same spatial size with tensor 'tar'
 def _upsample_like(src, tar):
-    src = F.upsample(src, size=tar.shape[2:], mode='bilinear')
-
-    return src
+    return F.interpolate(src, size=tar.shape[2:], mode='bilinear', align_corners=True)
 
 
 ### RSU-7 ###
@@ -31,33 +26,33 @@ class RSU7(nn.Module):  # UNet07DRES(nn.Module):
     def __init__(self, in_ch=3, mid_ch=12, out_ch=3):
         super(RSU7, self).__init__()
 
-        self.rebnconvin = REBNCONV(in_ch, out_ch, dirate=1)
+        self.rebnconvin = REBNCONV(in_ch, out_ch, dilate=1)
 
-        self.rebnconv1 = REBNCONV(out_ch, mid_ch, dirate=1)
+        self.rebnconv1 = REBNCONV(out_ch, mid_ch, dilate=1)
         self.pool1 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv2 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv2 = REBNCONV(mid_ch, mid_ch, dilate=1)
         self.pool2 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv3 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv3 = REBNCONV(mid_ch, mid_ch, dilate=1)
         self.pool3 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv4 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv4 = REBNCONV(mid_ch, mid_ch, dilate=1)
         self.pool4 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv5 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv5 = REBNCONV(mid_ch, mid_ch, dilate=1)
         self.pool5 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv6 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv6 = REBNCONV(mid_ch, mid_ch, dilate=1)
 
-        self.rebnconv7 = REBNCONV(mid_ch, mid_ch, dirate=2)
+        self.rebnconv7 = REBNCONV(mid_ch, mid_ch, dilate=2)
 
-        self.rebnconv6d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv5d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv4d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv3d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv2d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv1d = REBNCONV(mid_ch * 2, out_ch, dirate=1)
+        self.rebnconv6d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv5d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv4d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv3d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv2d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv1d = REBNCONV(mid_ch * 2, out_ch, dilate=1)
 
     def forward(self, x):
         hx = x
@@ -108,29 +103,29 @@ class RSU6(nn.Module):  # UNet06DRES(nn.Module):
     def __init__(self, in_ch=3, mid_ch=12, out_ch=3):
         super(RSU6, self).__init__()
 
-        self.rebnconvin = REBNCONV(in_ch, out_ch, dirate=1)
+        self.rebnconvin = REBNCONV(in_ch, out_ch, dilate=1)
 
-        self.rebnconv1 = REBNCONV(out_ch, mid_ch, dirate=1)
+        self.rebnconv1 = REBNCONV(out_ch, mid_ch, dilate=1)
         self.pool1 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv2 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv2 = REBNCONV(mid_ch, mid_ch, dilate=1)
         self.pool2 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv3 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv3 = REBNCONV(mid_ch, mid_ch, dilate=1)
         self.pool3 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv4 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv4 = REBNCONV(mid_ch, mid_ch, dilate=1)
         self.pool4 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv5 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv5 = REBNCONV(mid_ch, mid_ch, dilate=1)
 
-        self.rebnconv6 = REBNCONV(mid_ch, mid_ch, dirate=2)
+        self.rebnconv6 = REBNCONV(mid_ch, mid_ch, dilate=2)
 
-        self.rebnconv5d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv4d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv3d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv2d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv1d = REBNCONV(mid_ch * 2, out_ch, dirate=1)
+        self.rebnconv5d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv4d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv3d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv2d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv1d = REBNCONV(mid_ch * 2, out_ch, dilate=1)
 
     def forward(self, x):
         hx = x
@@ -176,25 +171,25 @@ class RSU5(nn.Module):  # UNet05DRES(nn.Module):
     def __init__(self, in_ch=3, mid_ch=12, out_ch=3):
         super(RSU5, self).__init__()
 
-        self.rebnconvin = REBNCONV(in_ch, out_ch, dirate=1)
+        self.rebnconvin = REBNCONV(in_ch, out_ch, dilate=1)
 
-        self.rebnconv1 = REBNCONV(out_ch, mid_ch, dirate=1)
+        self.rebnconv1 = REBNCONV(out_ch, mid_ch, dilate=1)
         self.pool1 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv2 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv2 = REBNCONV(mid_ch, mid_ch, dilate=1)
         self.pool2 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv3 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv3 = REBNCONV(mid_ch, mid_ch, dilate=1)
         self.pool3 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv4 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv4 = REBNCONV(mid_ch, mid_ch, dilate=1)
 
-        self.rebnconv5 = REBNCONV(mid_ch, mid_ch, dirate=2)
+        self.rebnconv5 = REBNCONV(mid_ch, mid_ch, dilate=2)
 
-        self.rebnconv4d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv3d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv2d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv1d = REBNCONV(mid_ch * 2, out_ch, dirate=1)
+        self.rebnconv4d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv3d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv2d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv1d = REBNCONV(mid_ch * 2, out_ch, dilate=1)
 
     def forward(self, x):
         hx = x
@@ -234,21 +229,21 @@ class RSU4(nn.Module):  # UNet04DRES(nn.Module):
     def __init__(self, in_ch=3, mid_ch=12, out_ch=3):
         super(RSU4, self).__init__()
 
-        self.rebnconvin = REBNCONV(in_ch, out_ch, dirate=1)
+        self.rebnconvin = REBNCONV(in_ch, out_ch, dilate=1)
 
-        self.rebnconv1 = REBNCONV(out_ch, mid_ch, dirate=1)
+        self.rebnconv1 = REBNCONV(out_ch, mid_ch, dilate=1)
         self.pool1 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv2 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv2 = REBNCONV(mid_ch, mid_ch, dilate=1)
         self.pool2 = nn.MaxPool2d(2, stride=2, ceil_mode=True)
 
-        self.rebnconv3 = REBNCONV(mid_ch, mid_ch, dirate=1)
+        self.rebnconv3 = REBNCONV(mid_ch, mid_ch, dilate=1)
 
-        self.rebnconv4 = REBNCONV(mid_ch, mid_ch, dirate=2)
+        self.rebnconv4 = REBNCONV(mid_ch, mid_ch, dilate=2)
 
-        self.rebnconv3d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv2d = REBNCONV(mid_ch * 2, mid_ch, dirate=1)
-        self.rebnconv1d = REBNCONV(mid_ch * 2, out_ch, dirate=1)
+        self.rebnconv3d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv2d = REBNCONV(mid_ch * 2, mid_ch, dilate=1)
+        self.rebnconv1d = REBNCONV(mid_ch * 2, out_ch, dilate=1)
 
     def forward(self, x):
         hx = x
@@ -282,17 +277,17 @@ class RSU4F(nn.Module):  # UNet04FRES(nn.Module):
     def __init__(self, in_ch=3, mid_ch=12, out_ch=3):
         super(RSU4F, self).__init__()
 
-        self.rebnconvin = REBNCONV(in_ch, out_ch, dirate=1)
+        self.rebnconvin = REBNCONV(in_ch, out_ch, dilate=1)
 
-        self.rebnconv1 = REBNCONV(out_ch, mid_ch, dirate=1)
-        self.rebnconv2 = REBNCONV(mid_ch, mid_ch, dirate=2)
-        self.rebnconv3 = REBNCONV(mid_ch, mid_ch, dirate=4)
+        self.rebnconv1 = REBNCONV(out_ch, mid_ch, dilate=1)
+        self.rebnconv2 = REBNCONV(mid_ch, mid_ch, dilate=2)
+        self.rebnconv3 = REBNCONV(mid_ch, mid_ch, dilate=4)
 
-        self.rebnconv4 = REBNCONV(mid_ch, mid_ch, dirate=8)
+        self.rebnconv4 = REBNCONV(mid_ch, mid_ch, dilate=8)
 
-        self.rebnconv3d = REBNCONV(mid_ch * 2, mid_ch, dirate=4)
-        self.rebnconv2d = REBNCONV(mid_ch * 2, mid_ch, dirate=2)
-        self.rebnconv1d = REBNCONV(mid_ch * 2, out_ch, dirate=1)
+        self.rebnconv3d = REBNCONV(mid_ch * 2, mid_ch, dilate=4)
+        self.rebnconv2d = REBNCONV(mid_ch * 2, mid_ch, dilate=2)
+        self.rebnconv1d = REBNCONV(mid_ch * 2, out_ch, dilate=1)
 
     def forward(self, x):
         hx = x
@@ -314,7 +309,6 @@ class RSU4F(nn.Module):  # UNet04FRES(nn.Module):
 
 ##### U^2-Net ####
 class U2NET(nn.Module):
-
     def __init__(self, in_ch=3, out_ch=1):
         super(U2NET, self).__init__()
 
@@ -414,12 +408,11 @@ class U2NET(nn.Module):
         d0 = self.outconv(torch.cat((d1, d2, d3, d4, d5, d6), 1))
 
         # return F.sigmoid(d0), F.sigmoid(d1), F.sigmoid(d2), F.sigmoid(d3), F.sigmoid(d4), F.sigmoid(d5), F.sigmoid(d6)
-        return d0, d1, d2, d3, d4, d5, d5
+        return d0, d1, d2, d3, d4, d5, d6
 
 
 ### U^2-Net small ###
 class U2NETP(nn.Module):
-
     def __init__(self, in_ch=3, out_ch=1):
         super(U2NETP, self).__init__()
 
@@ -519,4 +512,4 @@ class U2NETP(nn.Module):
         d0 = self.outconv(torch.cat((d1, d2, d3, d4, d5, d6), 1))
 
         # return F.sigmoid(d0), F.sigmoid(d1), F.sigmoid(d2), F.sigmoid(d3), F.sigmoid(d4), F.sigmoid(d5), F.sigmoid(d6)
-        return d0, d1, d2, d3, d4, d5, d5
+        return d0, d1, d2, d3, d4, d5, d6

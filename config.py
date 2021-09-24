@@ -14,7 +14,7 @@ class Config:
 
         self.num_classes = 19
         self.dataset = "ImageFolder"
-        self.data_dir = "/data/face/parsing/dataset/CelebAMask-HQ_processed"
+        self.data_dir = "/data/face/parsing/dataset/CelebAMask-HQ_processed3"
         self.sample_dir = "/data/face/parsing/dataset/testset_210720_aligned"
         self.image_size = (512, 512)
         self.crop_size = (448, 448)
