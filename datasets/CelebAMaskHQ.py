@@ -38,7 +38,7 @@ def process(src_folder, dst_folder):
 
             mask_map[idx][file_name[6:-4]] = os.path.join(folder_name, file_name)
 
-    label_names = ['background', 'skin', 'l_brow', 'r_brow', 'l_eye', 'r_eye', 'eye_g', 'l_ear', 'r_ear', 'ear_r', 'nose', 'mouth', 'u_lip', 'l_lip', 'neck', 'neck_l', 'cloth', 'hair', 'hat']
+    label_names = ['background', 'skin', 'l_brow', 'r_brow', 'l_eye', 'r_eye', 'l_ear', 'r_ear', 'ear_r', 'nose', 'mouth', 'u_lip', 'l_lip', 'neck', 'neck_l', 'cloth', 'eye_g', 'hair', 'hat', 'occlusion']
     label_map = {name: idx for idx, name in enumerate(label_names)}
 
     # 2.copy
@@ -86,4 +86,4 @@ def process(src_folder, dst_folder):
 
 
 if __name__ == '__main__':
-    process("/data/face/parsing/dataset/CelebAMask-HQ", "/data/face/parsing/dataset/CelebAMask-HQ_processed2")
+    process("/data/face/parsing/dataset/CelebAMask-HQ", "/data/face/parsing/dataset/CelebAMask-HQ_processed4")

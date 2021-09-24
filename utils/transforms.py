@@ -1,6 +1,8 @@
 import torch
 from PIL import Image, ImageEnhance
 import torchvision.transforms.functional as F
+import numpy as np
+
 import random
 
 
@@ -91,3 +93,18 @@ class ColorJitter:
         image = ImageEnhance.Contrast(image).enhance(r_contrast)
         image = ImageEnhance.Color(image).enhance(r_saturation)
         return image, mask
+
+
+class RandomHorizontalFlip:
+    def __init__(self, p=0.5):
+        self.p = p
+
+    def __call__(self, img, mask):
+        if random.random() < self.p:
+            img, mask = F.hflip(img), F.hflip(mask)
+            mask_np = np.asarray(mask)
+            for a, b in [(2, 3), (4, 5), (7, 8)]:
+                ma, mb = mask_np == a, mask_np == b
+                mask_np[ma], mask_np[mb] = b, a
+            mask = Image.fromarray(mask_np)
+        return img, mask

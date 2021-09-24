@@ -20,7 +20,8 @@ class Config:
         self.crop_size = (448, 448)
         self.do_val = True
 
-        self.train_transform = Compose([ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5),
+        self.train_transform = Compose([RandomHorizontalFlip(),
+                                        ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5),
                                         RandomScale((0.75, 1.25)),
                                         RandomRotation(),
                                         RandomCrop(self.crop_size),
