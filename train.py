@@ -7,6 +7,7 @@ if __name__ == '__main__':
     # cfg.sample_dir = "/home/renpeng/dataset/testset_210720_aligned"
     # cfg.batch_size = 16
     # cfg.epochs = 200
+    cfg.epochs = 35
 
     solver = Solver(cfg)
     solver.train()
